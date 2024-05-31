@@ -1,3 +1,3 @@
-## About Laravel
+## About Application
 
-Laravel API Project with Sanctum
+This is a Laravel API Project with Sanctum authentication support.
