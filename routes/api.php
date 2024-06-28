@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json('Welcome to Laravel 11 API');
 })->name('welcome');
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+
+Route::get('/task', [TaskController::class, 'listPublic']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::controller(AuthController::class)->group(function () {
@@ -23,10 +26,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::controller(TaskController::class)->group(function () {
-        Route::get('/task', 'list');
-        Route::get('/task/{id}', 'show');
-        Route::post('/task', 'create');
-        Route::put('/task/{id}', 'update');
-        Route::delete('/task/{id}', 'delete');
+        Route::get('/user/task', 'listPrivate');
+        Route::get('/user/task/{id}', 'show');
+        Route::post('/user/task', 'create');
+        Route::put('/user/task/{id}', 'update');
+        Route::delete('/user/task/{id}', 'delete');
     });
 });

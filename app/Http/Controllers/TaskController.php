@@ -7,7 +7,13 @@ use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
-    public function list(Request $request)
+    public function listPublic(Request $request)
+    {
+        $tasks = Task::paginate();
+
+        return response()->json($tasks, 200);
+    }
+    public function listPrivate(Request $request)
     {
         $tasks = Task::where('created_by_user_id', $request->user()->id)->paginate();
 
