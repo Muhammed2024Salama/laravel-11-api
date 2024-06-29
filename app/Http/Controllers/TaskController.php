@@ -4,27 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use App\Http\Resources\TaskResource;
 
 class TaskController extends Controller
 {
     public function listPublic(Request $request)
     {
         $tasks = Task::paginate();
-
-        return response()->json($tasks, 200);
+        return TaskResource::collection($tasks);
     }
+
     public function listPrivate(Request $request)
     {
         $tasks = Task::where('created_by_user_id', $request->user()->id)->paginate();
-
-        return response()->json($tasks, 200);
+        return TaskResource::collection($tasks);
     }
+
     public function show(Request $request)
     {
         $task = Task::findOrFail($request->id);
-
-        return response()->json($task, 200);
+        return new TaskResource($task);
     }
+
     public function create(Request $request)
     {
         $request->validate([
@@ -42,8 +43,9 @@ class TaskController extends Controller
 
         $task->save();
 
-        return response()->json($task, 200);
+        return new TaskResource($task);
     }
+
     public function update(Request $request)
     {
         $request->validate([
@@ -62,14 +64,14 @@ class TaskController extends Controller
 
         $task->save();
 
-        return response()->json($task, 200);
+        return new TaskResource($task);
     }
+
     public function delete(Request $request)
     {
         $task = Task::findOrFail($request->id);
-
         $task->delete();
 
-        return response()->json($task, 200);
+        return response()->json(['message' => 'Task deleted successfully'], 200);
     }
 }
