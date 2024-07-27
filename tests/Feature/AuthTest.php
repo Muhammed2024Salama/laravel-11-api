@@ -72,7 +72,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertInvalid('email');
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
     }
 
     public function test_register_with_invalid_email()
@@ -84,7 +84,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertInvalid('email');
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
     }
 
     public function test_register_with_short_password()
@@ -96,7 +96,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertInvalid('password');
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
     }
 
     public function test_register_without_required_fields()
@@ -107,7 +107,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertInvalid('name');
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
 
         $response = $this->postJson('/api/register', [
             'name' => 'Gabriel Miranda',
@@ -115,7 +115,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertInvalid('email');
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
 
         $response = $this->postJson('/api/register', [
             'name' => 'Gabriel Miranda',
@@ -123,8 +123,21 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertInvalid('password');
-        $response->assertStatus(422);
+        $response->assertUnprocessable();
     }
+
+
+    // public function test_update_user_with_short_password()
+    // {
+    //     $response = $this->postJson('/api/register', [
+    //         'name' => 'Gabriel Miranda',
+    //         'email' => 'gabriel@example.com',
+    //         'password' => 'passw'
+    //     ]);
+
+    //     $response->assertInvalid('password');
+    //     $response->assertStatus(422);
+    // }
 
     public function test_logout_with_valid_token()
     {

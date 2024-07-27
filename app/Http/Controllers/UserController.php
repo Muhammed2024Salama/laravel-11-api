@@ -15,16 +15,12 @@ class UserController extends Controller
     public function update(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => 'required|email|unique:users,email',
-            'name' => 'required'
+            'email' => 'email|unique:users,email',
         ]);
 
         $user = User::findOrFail($request->user()->id);
 
-        $user->fill([
-            'email' => $request->email,
-            'name' => $request->name,
-        ]);
+        $user->fill($request->all());
 
         $user->save();
 
@@ -36,6 +32,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return response()->json($user, 200);
+        return response()->json(['message' => 'Successfully deleted account'], 200);
     }
 }
