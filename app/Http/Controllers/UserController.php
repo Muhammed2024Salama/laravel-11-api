@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function show(Request $request): User
+    public function show(UserRequest $request): User
     {
         return $request->user();
     }
-    public function update(Request $request): JsonResponse
+    public function update(UserRequest $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'email|unique:users,email',
-        ]);
+        $request->validated();
 
         $user = User::findOrFail($request->user()->id);
 
@@ -26,11 +25,9 @@ class UserController extends Controller
 
         return response()->json($user, 200);
     }
-    public function delete(Request $request): JsonResponse
+    public function delete(UserRequest $request): JsonResponse
     {
-        $user = User::findOrFail($request->user()->id);
-
-        $user->delete();
+        $request->user()->delete();
 
         return response()->json(['message' => 'Successfully deleted account'], 200);
     }
