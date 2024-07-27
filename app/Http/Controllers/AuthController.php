@@ -24,11 +24,13 @@ class AuthController extends Controller
 
         $token = $user->createToken('accessToken', ['*'], now()->addHour());
 
-        return [
+        $user = [
             'user' => $user,
             'token' => $token->plainTextToken,
             'expires_at' => $token->accessToken->expires_at
         ];
+
+        return response()->json($user, 200);
     }
 
     public function register(Request $request): JsonResponse
