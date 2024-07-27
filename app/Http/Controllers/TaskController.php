@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Http\Resources\TaskResource;
@@ -10,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskController extends Controller
 {
-    public function listPublic(Request $request): JsonResource
+    public function listPublic(): JsonResource
     {
         $tasks = Task::paginate();
         return TaskResource::collection($tasks);
@@ -28,13 +29,9 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
-    public function create(Request $request): JsonResource
+    public function create(TaskRequest $request): JsonResource
     {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'completed' => 'required'
-        ]);
+        $request->validated();
 
         $task = Task::create([
             'name' => $request->name,
@@ -48,21 +45,13 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
-    public function update(Request $request): JsonResource
+    public function update(TaskRequest $request): JsonResource
     {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'completed' => 'required'
-        ]);
+        $request->validated();
 
         $task = Task::findOrFail($request->id);
 
-        $task->fill([
-            'name' => $request->name,
-            'description' => $request->description,
-            'completed' => $request->completed,
-        ]);
+        $task->fill($request->all());
 
         $task->save();
 
