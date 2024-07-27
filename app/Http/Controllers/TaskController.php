@@ -5,28 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Http\Resources\TaskResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskController extends Controller
 {
-    public function listPublic(Request $request)
+    public function listPublic(Request $request): JsonResource
     {
         $tasks = Task::paginate();
         return TaskResource::collection($tasks);
     }
 
-    public function listPrivate(Request $request)
+    public function listPrivate(Request $request): JsonResource
     {
         $tasks = Task::where('created_by_user_id', $request->user()->id)->paginate();
         return TaskResource::collection($tasks);
     }
 
-    public function show(Request $request)
+    public function show(Request $request): JsonResource
     {
         $task = Task::findOrFail($request->id);
         return new TaskResource($task);
     }
 
-    public function create(Request $request)
+    public function create(Request $request): JsonResource
     {
         $request->validate([
             'name' => 'required',
@@ -46,7 +48,7 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
-    public function update(Request $request)
+    public function update(Request $request): JsonResource
     {
         $request->validate([
             'name' => 'required',
@@ -67,7 +69,7 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request): JsonResponse
     {
         $task = Task::findOrFail($request->id);
         $task->delete();

@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function show(Request $request)
+    public function show(Request $request): User
     {
         return $request->user();
     }
-    public function update(Request $request)
+    public function update(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email|unique:users,email',
@@ -29,7 +30,7 @@ class UserController extends Controller
 
         return response()->json($user, 200);
     }
-    public function delete(Request $request)
+    public function delete(Request $request): JsonResponse
     {
         $user = User::findOrFail($request->user()->id);
 
