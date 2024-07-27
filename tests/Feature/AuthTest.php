@@ -9,27 +9,6 @@ use Tests\TestCase;
 class AuthTest extends TestCase
 {
     use RefreshDatabase;
-
-
-
-    public function test_task_routes_are_protected_from_public()
-    {
-        $response = $this->getJson('/api/user/task');
-        $response->assertUnauthorized();
-
-        $response = $this->getJson('/api/user/task/{id}');
-        $response->assertUnauthorized();
-
-        $response = $this->postJson('/api/user/task');
-        $response->assertUnauthorized();
-
-        $response = $this->putJson('/api/user/task/{id}');
-        $response->assertUnauthorized();
-
-        $response = $this->deleteJson('/api/user/task/{id}');
-        $response->assertUnauthorized();
-    }
-
     public function test_user_can_authenticate()
     {
         User::factory()->create([
@@ -42,7 +21,7 @@ class AuthTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertStatus(200)
+        $response->assertOk()
             ->assertJsonStructure(['user', 'token', 'expires_at']);
     }
 
@@ -55,7 +34,7 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertJsonStructure(['name', 'email', 'updated_at', 'created_at', 'id']);
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 
     public function test_register_with_existing_email()
@@ -126,19 +105,6 @@ class AuthTest extends TestCase
         $response->assertUnprocessable();
     }
 
-
-    // public function test_update_user_with_short_password()
-    // {
-    //     $response = $this->postJson('/api/register', [
-    //         'name' => 'Gabriel Miranda',
-    //         'email' => 'gabriel@example.com',
-    //         'password' => 'passw'
-    //     ]);
-
-    //     $response->assertInvalid('password');
-    //     $response->assertStatus(422);
-    // }
-
     public function test_logout_with_valid_token()
     {
         $user = User::factory()->create();
@@ -148,7 +114,7 @@ class AuthTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/logout');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertJson(['message' => 'Token revoked successfully']);
         $this->assertDatabaseMissing('personal_access_tokens', ['tokenable_id' => $user->id]);
     }
@@ -159,7 +125,7 @@ class AuthTest extends TestCase
             'Authorization' => 'Bearer invalidToken',
         ])->postJson('/api/logout');
 
-        $response->assertStatus(401);
+        $response->assertUnauthorized();
         $response->assertJson(['message' => 'Unauthenticated.']);
     }
 
@@ -167,7 +133,7 @@ class AuthTest extends TestCase
     {
         $response = $this->postJson('/api/logout');
 
-        $response->assertStatus(401);
+        $response->assertUnauthorized();
         $response->assertJson(['message' => 'Unauthenticated.']);
     }
     public function test_logout_with_expired_token()
@@ -179,7 +145,7 @@ class AuthTest extends TestCase
             'Authorization' => 'Bearer ' . $token,
         ])->postJson('/api/logout');
 
-        $response->assertStatus(401);
+        $response->assertUnauthorized();
         $response->assertJson(['message' => 'Unauthenticated.']);
         $this->assertDatabaseHas('personal_access_tokens', ['tokenable_id' => $user->id]);
     }

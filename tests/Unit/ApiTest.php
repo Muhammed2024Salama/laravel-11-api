@@ -15,6 +15,6 @@ class ApiTest extends TestCase
         $response = $this->get('/api');
 
         $response->assertSimilarJson(['Welcome to Laravel 11 API']);
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 }

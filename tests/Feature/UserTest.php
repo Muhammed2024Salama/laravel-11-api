@@ -12,18 +12,18 @@ class UserTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
 
-    public function test_show_returns_logged_in_user()
+    public function test_show_returns_user()
     {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->getJson('/api/user');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertJsonStructure(['id', 'name', 'email', 'created_at', 'updated_at']);
         $response->assertJson(['id' => $user->id, 'name' => $user->name, 'email' => $user->email]);
     }
 
-    public function test_show_returns_401_if_not_authenticated()
+    public function test_show_returns_unauthorized()
     {
         $response = $this->getJson('/api/user');
 
@@ -42,7 +42,7 @@ class UserTest extends TestCase
         ]);
 
         $response->assertJsonStructure(['name', 'email', 'updated_at', 'created_at', 'id']);
-        $response->assertStatus(200);
+        $response->assertOk();
     }
 
     public function test_update_user_with_existing_email()
@@ -79,11 +79,11 @@ class UserTest extends TestCase
 
     public function test_user_can_delete_your_account()
     {
-        $user = User::factory()->create([
-            'email' => 'gabriel@example.com'
-        ]);
+        $user = User::factory()->create();
 
         $response = $this->actingAs($user)->deleteJson('/api/user');
+
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
 
         $response->assertJson(['message' => 'Successfully deleted account']);
         $response->assertOk();
